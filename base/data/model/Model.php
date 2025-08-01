@@ -50,12 +50,9 @@ abstract class Model {
 	 * @return array フィールド定義の一覧
 	 */
 	final public function fields(): array {
-		if (empty($this->fieldDefs)) {
-			$this->fieldDefs = ArrayUtil::append($this->commonFields(), $this->ownFields());
-		}
-		return $this->fieldDefs;
+		$fieldDefs = ArrayUtil::append($this->commonFields(), $this->ownFields());
+		return $fieldDefs;
 	}
-	private array $fieldDefs = [];
 
 	/** @var string 主キー名 */
 	public const string pkey = 'pkey';
