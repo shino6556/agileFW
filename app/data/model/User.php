@@ -6,6 +6,7 @@ require_once __DIR__ . '/autoload.php';
 
 use nnk2\base\util\Types;
 use nnk2\base\data\model\Model;
+use nnk2\base\data\model\Field;
 use nnk2\base\data\db\DbTypes;
 use nnk2\base\logic\Logic;
 use nnk2\app\logic\UserLogic;
@@ -39,14 +40,6 @@ class User extends Model {
 		return 't_user';
 	}
 
-	/**
-	 * 固有フィールド定義の一覧を返す
-	 * @return array 固有フィールド定義の一覧
-	 */
-	protected function getOwnFields(): array {
-		return self::FIELDS;
-	}
-
 	/** @var string ユーザ名 */
 	public const string name = 'name';
 	/** @var string メールアドレス */
@@ -58,14 +51,23 @@ class User extends Model {
 	/** @var string 所属 */
 	public const string belong = 'belong';
 
-	/** @var array モデルのフィールド定義 */
-	private const array FIELDS = [
-		self::name =>     ['name',      'ユーザ名',       Types::STRING, DbTypes::VARCHAR, 4, 20],
-		self::email =>    ['email',     'メールアドレス', Types::STRING, DbTypes::VARCHAR, 4, 50],
-		self::password => ['password',  'パスワード',     Types::STRING, DbTypes::VARCHAR, 4, 20],
-		self::belongId => ['belong_id', '所属ID',         Types::INT,    DbTypes::BIG_INT, 1],
-		self::belong =>   [null,        '所属',           Types::MODEL,  null, 'UserOrg', 'belongId'],
-	];
+	/** @var array モデルの固有フィールド定義 */
+	private static array $ownFields = [];
+
+	/**
+	 * モデルのフィールド定義を返す
+	 * @return array モデルのフィールド定義
+	 */
+	protected function ownFields(): array {
+		if (empty(self::$ownFields)) {
+			self::$ownFields[self::name]     = Field::new(self::name,      'name',      'ユーザ名',       Types::STRING, DbTypes::VARCHAR, 4, 20);
+			self::$ownFields[self::email]    = Field::new(self::email,     'email',     'メールアドレス', Types::STRING, DbTypes::VARCHAR, 4, 50);
+			self::$ownFields[self::password] = Field::new(self::password,  'password',  'パスワード',     Types::STRING, DbTypes::VARCHAR, 4, 20);
+			self::$ownFields[self::belongId] = Field::new(self::belongId,  'belong_id', '所属ID',         Types::INT,    DbTypes::BIG_INT, 1,);
+			self::$ownFields[self::belong]   = Field::ref(self::belong,    'belong',    '所属',           'UserOrg',     'belongId');
+		}
+		return self::$ownFields;
+	}
 
 	/**
 	 * このモデルを管理するロジックを返す

@@ -14,22 +14,21 @@ use nnk2\base\validate\field\ValField;
  * 全角文字のみを許可する。
  */
 class ValJpName extends ValField {
-    public function __construct() {
-    }
     /**
      * @param Model $model 検証対象のモデル
-     * @param Results $results 検証結果保持
+     * @param ?array $row 検証対象の配列 
      * @param string $fieldName フィールド名
-     * @param ?array $row 検証対象の配列 省略=null 
+     * @param Results $results 検証結果保持
      * @return ValJpName 検証インスタンス
      */
-    public static function start(Model $model, Results $results, string $fieldName, ?array $row = null): ValJpName {
-        return self::startBase(self::$all, $model, $results, $fieldName, $row);
+    public static function start(Model $model, ?array $row, string $fieldName, Results $results): ValJpName {
+        return self::startBase(self::$all, $model, $row, $fieldName, $results);
     }
     private static array $all = [];
 
     /**
      * @inheritDoc
+     * mandatory,checkZen,checkStr,checkJpNameの順に呼び出す
      */
     public function check(bool $mandatory = false): ValJpName {
         $this->mandatory($mandatory)->checkZen()->checkStr();
@@ -44,9 +43,8 @@ class ValJpName extends ValField {
         if ($this->value === null) return $this;
 
         // ハイフンとピリオドを許可する
-        $han = substr(StrUtil::HAN_SYM, 0, strlen(StrUtil::HAN_SYM) - 2);
-        if (StrUtil::contains($this->value, $han)) {
-            $this->error($this->name, $this->jpName . 'は半角ハイフン、ピリオド以外の記号を含んではなりません。');
+        if (StrUtil::contains($this->value, StrUtil::ZEN_SYM)) {
+            $this->error($this->name, $this->jpName . 'は記号を含んではなりません。');
         }
         return $this;
     }

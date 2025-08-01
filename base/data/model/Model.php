@@ -8,7 +8,6 @@ use DateTime;
 use Nnk2\Base\Util\ArrayUtil;
 use Nnk2\Base\Util\Results;
 use Nnk2\Base\Util\StrUtil;
-use Nnk2\Base\Util\TypeUtil;
 use Nnk2\Base\Util\Types;
 use Nnk2\Base\logic\Logic;
 use Nnk2\Base\data\db\DbTypes;
@@ -22,7 +21,7 @@ use Nnk2\Base\data\db\DbTypes;
 abstract class Model {
 	/**
 	 * コンストラクタ
-	 * @param int $pkey 主キー (省略 = 0)
+	 * @param int $pkey 主キー (省略 = 0 :新規作成)
 	 * 主キーが0の場合、モデルは新規作成される。
 	 */
 	public function __construct(int $pkey = 0) {
@@ -40,152 +39,24 @@ abstract class Model {
 	abstract public function modelName(): string;
 
 	/**
-	 * 固有フィールド名の一覧を返す
-	 * @return array フィールド名の一覧
+	 * 固有フィールド定義の一覧を返す
+	 * @return array 固有フィールド定義の一覧
 	 * @abstract
 	 */
-	abstract protected function getOwnFields(): array;
+	abstract protected function ownFields(): array;
 
 	/**
 	 * フィールド定義の一覧を返す
 	 * @return array フィールド定義の一覧
-	 * @abstract
 	 */
-	public function getFields(): array {
-		if ($this->fields === null) {
-			$this->fields = ArrayUtil::append(self::COMMON_FIELDS, $this->getOwnFields());
+	final public function fields(): array {
+		if (empty($this->fieldDefs)) {
+			$this->fieldDefs = ArrayUtil::append($this->commonFields(), $this->ownFields());
 		}
-		return $this->fields;
+		return $this->fieldDefs;
 	}
-	/** @var ?array 共通＋固有フィールド */
-	private ?array $fields = null;
+	private array $fieldDefs = [];
 
-
-	protected function field(string $name): ?array {
-		$field = ArrayUtil::get($this->getFields(), $name);
-		if (!$field) {
-			Results::self()->error(__METHOD__, 'error.field.not_found' . $this->modelName() . '::' . $name);
-			return null;
-		} else {
-			return $field;
-		}
-	}
-
-	/** @var int フィールド配列:フィールド名 */
-	public const int FLD_FIELD_NAME = 0;
-	/** @var int フィールド配列:DBカラム名 */
-	public const int FLD_COLUMN_NAME = 1;
-	/** @var int フィールド配列:日本語名 */
-	public const int FLD_JAPANESE_NAME = 2;
-	/** @var int フィールド配列:PHPデータ型 */
-	public const int FLD_DATA_TYPE = 3;
-	/** @var int フィールド配列:DBデータ型 */
-	public const int FLD_DATA_DBTYPE = 4;
-	/** @var int フィールド配列:最小値 */
-	public const int FLD_MIN = 5;
-	/** @var int フィールド配列:最大値 */
-	public const int FLD_MAX = 6;
-	/** @var int フィールド配列:初期値 */
-	public const int FLD_DEF = 7;
-	/** @var int フィールド配列:関連先のモデル名 */
-	public const int FLD_MODEL_NAME = 8;
-	/** @var int フィールド配列:関連先のモデルのpkeyを保持するフィールド */
-	public const int FLD_MODEL_PKEY = 9;
-
-	/**
-	 * DB上のカラム名を返す
-	 * @param string $name フィールド名
-	 * @return string DB上のカラム名
-	 */
-	public function column(string $name): ?string {
-		$field = $this->field($name);
-		return $field ? $field[self::FLD_COLUMN_NAME] : null;
-	}
-	/**
-	 * フィールドの日本語名を返す
-	 * @param string $name フィールド名
-	 * @return string フィールドの日本語名
-	 */
-	public function jpName(string $name): ?string {
-		$field = $this->field($name);
-		return $field ? $field[self::FLD_JAPANESE_NAME] : null;
-	}
-	/**
-	 * フィールドのデータ型を返す
-	 * @param string $name フィールド名
-	 * @return ?Types フィールドのデータ型
-	 */
-	public function type(string $name): ?Types {
-		$field = $this->field($name);
-		return $field ? $field[self::FLD_DATA_TYPE] : null;
-	}
-	/**
-	 * フィールドのDBデータ型を返す
-	 * @param string $name フィールド名
-	 * @return ?DbTypes フィールドのDBデータ型
-	 */
-	public function dbType(string $name): ?DbTypes {
-		$field = $this->field($name);
-		return $field ? $field[self::FLD_DATA_DBTYPE] : null;
-	}
-	/**
-	 * フィールドの最小値を返す
-	 * @param string $name フィールド名
-	 * @return ?int フィールドの最小値
-	 */
-	public function min(string $name): ?int {
-		$field = $this->field($name);
-		return $field ? $field[self::FLD_MIN] : null;
-	}
-	/**
-	 * フィールドの最大値を返す
-	 * @param string $name フィールド名
-	 * @return ?int フィールドの最大値
-	 */
-	public function max(string $name): ?int {
-		$field = $this->field($name);
-		return $field ? $field[self::FLD_MAX] : null;
-	}
-	/**
-	 * フィールドの規定値を返す
-	 * @param string $name フィールド名
-	 * @return mixed フィールドの規定値
-	 */
-	public function def(string $name): mixed {
-		$field = $this->field($name);
-		return $field ? $field[self::FLD_DEF] : null;
-	}
-	/**
-	 * フィールドの関連先モデル名を返す
-	 * @param string $name フィールド名
-	 * @return ?string 関連先モデル名 null:関連なし
-	 */
-	public function refModel(string $name): ?string {
-		$field = $this->field($name);
-		return $field ? ArrayUtil::get($field, self::FLD_MODEL_NAME) : null;
-	}
-	/**
-	 * フィールドの関連先モデルのpkeyを保持するフィールド名を返す
-	 * @param string $name フィールド名
-	 * @return ?string 関連先モデルのpkeyを保持するフィールド名 null:関連なし
-	 */
-	public function refModelPkey(string $name): ?string {
-		$field = $this->field($name);
-		return $field ? ArrayUtil::get($field, self::FLD_MODEL_PKEY) : null;
-	}
-
-	/**
-	 * フィールド名の一覧を返す
-	 * @param bool $onlyOwnField true:pkeyと固有フィールドのみ (省略 = false:全フィールド)
-	 * @return array フィールド名の一覧
-	 */
-	public function getFieldNames(bool $onlyOwnField = false): array {
-		if ($onlyOwnField) {
-			$fields = [self::pkey];
-			return ArrayUtil::append($fields, array_keys(self::$fields));
-		}
-		return array_keys($this->getFields());
-	}
 	/** @var string 主キー名 */
 	public const string pkey = 'pkey';
 	/** @var string 作成日 */
@@ -195,13 +66,132 @@ abstract class Model {
 	/** @var string 削除フラグ */
 	public const string deleteFlag = 'deleteFlag';
 
-	/** @var array 共通フィールド */
-	private const array COMMON_FIELDS = [
-		self::pkey       => [self::pkey,      'pkey',         '主キー',     Types::INT,      null, null, DbTypes::INT],
-		self::createDate => [self::createDate, 'create_date', '作成日',     Types::DATETIME, null, null, DbTypes::TIMESTAMP],
-		self::updateDate => [self::updateDate, 'update_date', '更新日',     Types::DATETIME, null, null, DbTypes::TIMESTAMP],
-		self::deleteFlag => [self::deleteFlag, 'delete_flag', '削除フラグ', Types::BOOL,     null, null, DbTypes::BOOL],
-	];
+	/**
+	 * 共通フィールド定義の一覧を返す
+	 * @return array 共通フィールド定義の一覧
+	 */
+	final protected function commonFields(): array {
+		if (empty(self::$commonFieldsDef)) {
+			self::$commonFieldsDef[self::pkey]       = Field::new(self::pkey,      'pkey',         '主キー',     Types::INT,      DbTypes::INT);
+			self::$commonFieldsDef[self::createDate] = Field::new(self::createDate, 'create_date', '作成日',     Types::DATETIME, DbTypes::TIMESTAMP);
+			self::$commonFieldsDef[self::updateDate] = Field::new(self::updateDate, 'update_date', '更新日',     Types::DATETIME, DbTypes::TIMESTAMP);
+			self::$commonFieldsDef[self::deleteFlag] = Field::new(self::deleteFlag, 'delete_flag', '削除フラグ', Types::BOOL,     DbTypes::BOOL, null, null, false);
+		}
+		return self::$commonFieldsDef;
+	}
+	private static array $commonFieldsDef = [];
+
+	/**
+	 * モデルのフィールド定義を返す
+	 * @param  string $name フィールド名
+	 * @return Field モデルのフィールド定義
+	 */
+	final public function field(string $name): ?Field {
+		$field = ArrayUtil::get($this->fields(), $name);
+		if (!$field) {
+			Results::self()->error(__METHOD__, 'error.field.not_found' . $this->modelName() . '::' . $name);
+			return null;
+		} else {
+			return $field;
+		}
+	}
+
+	/**
+	 * DB上のカラム名を返す
+	 * @param string $name フィールド名
+	 * @return string DB上のカラム名
+	 */
+	public function column(string $name): ?string {
+		$field = $this->field($name);
+		return $field ? $field->column : null;
+	}
+	/**
+	 * フィールドの日本語名を返す
+	 * @param string $name フィールド名
+	 * @return string フィールドの日本語名
+	 */
+	public function jpName(string $name): ?string {
+		$field = $this->field($name);
+		return $field ? $field->displayName : null;
+	}
+	/**
+	 * フィールドのデータ型を返す
+	 * @param string $name フィールド名
+	 * @return ?Types フィールドのデータ型
+	 */
+	public function type(string $name): ?Types {
+		$field = $this->field($name);
+		return $field ? $field->type : null;
+	}
+	/**
+	 * フィールドのDBデータ型を返す
+	 * @param string $name フィールド名
+	 * @return ?DbTypes フィールドのDBデータ型
+	 */
+	public function dbType(string $name): ?DbTypes {
+		$field = $this->field($name);
+		return $field ? $field->dbType : null;
+	}
+	/**
+	 * フィールドの最小値を返す
+	 * @param string $name フィールド名
+	 * @return ?int フィールドの最小値
+	 */
+	public function min(string $name): ?int {
+		$field = $this->field($name);
+		return $field ? $field->min : null;
+	}
+	/**
+	 * フィールドの最大値を返す
+	 * @param string $name フィールド名
+	 * @return ?int フィールドの最大値
+	 */
+	public function max(string $name): ?int {
+		$field = $this->field($name);
+		return $field ? $field->max : null;
+	}
+	/**
+	 * フィールドの規定値を返す
+	 * @param string $name フィールド名
+	 * @return mixed フィールドの規定値
+	 */
+	public function def(string $name): mixed {
+		$field = $this->field($name);
+		return $field ? $field->defaultValue : null;
+	}
+	/**
+	 * フィールドの関連先モデル名を返す
+	 * @param string $name フィールド名
+	 * @return ?string 関連先モデル名 null:関連なし
+	 */
+	public function refModel(string $name): ?string {
+		$field = $this->field($name);
+		return $field ? $field->modelName : null;
+	}
+	/**
+	 * フィールドの関連先モデルのpkeyを保持するフィールド名を返す
+	 * @param string $name フィールド名
+	 * @return ?string 関連先モデルのpkeyを保持するフィールド名 null:関連なし
+	 */
+	public function refModelPkey(string $name): ?string {
+		$field = $this->field($name);
+		return $field ? $field->modelId : null;
+	}
+
+	/**
+	 * フィールド名の一覧を返す
+	 * @param bool $onlyOwnFields true:pkeyと固有フィールドのみ (省略 = false:全フィールド)
+	 * @return array フィールド名の一覧
+	 */
+	public function getFieldNames(bool $onlyOwnFields = false): array {
+		if ($onlyOwnFields) {
+			$fields = [self::pkey];
+			$fields = ArrayUtil::append($fields, array_keys($this->ownFields()));
+		} else {
+			$fields = $this->fields();
+		}
+		return array_keys($fields());
+	}
 
 	/**
 	 * 基底モデルにキャストする
@@ -237,7 +227,7 @@ abstract class Model {
 	 */
 	public function toArray(?array $fields = null): array {
 		$values = [];
-		$targetFields = $fields ?? $this->getFields();
+		$targetFields = $fields ?? $this->fields();
 		foreach ($targetFields as $field) {
 			// モデルを保持するフィールドは書き込まない
 			$type = $this->getTypes($field);
@@ -264,15 +254,15 @@ abstract class Model {
 		$types = [];
 		if ($values) {
 			$names = array_keys($values);
-			$fields = $this->getFields();
+			$fields = $this->fields();
 			foreach ($names as $name) {
 				$info = ArrayUtil::get($fields, $name);
-				$types[$name] = $info[self::FLD_DATA_TYPE];
+				$types[$name] = $info->type ?? Types::STRING; // デフォルトは文字列型
 			}
 		} else {
-			$fields = $this->getFields();
+			$fields = $this->fields();
 			foreach ($fields as $name => $info) {
-				$types[$name] = $info[self::FLD_DATA_TYPE];
+				$types[$name] = $info->dbType ?? DbTypes::VARCHAR; // デフォルトは文字列型
 			}
 		}
 		return $types;
@@ -283,11 +273,11 @@ abstract class Model {
 	 * 相手を先に新規作成して、主キーを有効にする
 	 * @return array [フィールド名 => [対象モデル名,対象モデル主キー], ...]
 	 */
-	public function getDependModel(): array {
+	public function dependModel(): array {
 		$depends = [];
-		foreach ($this->getFields() as $field => $info) {
-			$modelName = ArrayUtil::get($info, self::FLD_MODEL_NAME);
-			$modelPkey = ArrayUtil::get($info, self::FLD_MODEL_PKEY);
+		foreach ($this->fields() as $field => $info) {
+			$modelName = $info->modelName;
+			$modelPkey = $info->modelId;
 			if ($modelName) {
 				$depends[$field] = [$modelName, $modelPkey];
 			}
@@ -295,7 +285,7 @@ abstract class Model {
 		return $depends;
 	}
 
-	//// プロパティのセット/取得 ////
+	// プロパティのセット/取得 ==========================
 
 	public function setPkey(int $val) {
 		$this->pkey = $val;
@@ -329,6 +319,8 @@ abstract class Model {
 	}
 	private ?int $deleteFlag = null;
 
+	// 活性化/不活性化 ==========================
+
 	/**
 	 * モデルを活性化する
 	 * @param bool $activated true:活性化する (省略 = true)
@@ -355,7 +347,6 @@ abstract class Model {
 	}
 	private bool $activated = false;
 
-
 	/**
 	 * モデルの値をロードし活性化する。
 	 * 派生クラスで自クラスにキャストするものをオーバーロードする
@@ -373,12 +364,16 @@ abstract class Model {
 			// ロジックに登録する
 			$logic->register($this, $isSetter);
 		} else if ($this->activated === false) {
-			// ロジックをロードする
+			// モデルをロードする
 			$logic->load($this->activate());
 		}
 		return $this;
 	}
 
+	/**
+	 * モデルのロジックを取得する
+	 * @return Logic ロジック
+	 */
 	protected function logic(): Logic {
 		$logic = Logic::getLogic($this->modelName() . 'Logic');
 		return $logic;

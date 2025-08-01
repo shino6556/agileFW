@@ -22,13 +22,12 @@ abstract class ValField {
      * バリデーションのインスタンスを取得する
      * @param array &$all ValFieldが登録される配列
      * @param Model $model 対象のモデル
-     * @param mixed $value 対象の値
-     * @param Results $results 処理結果を保持するインスタンス
+     * @param ?array $row 対象の配列 
      * @param string $fieldName フィールド名
-     * @param ?array $row 対象の配列 省略 = null
+     * @param Results $results 処理結果を保持するインスタンス
      * @return ValField バリデーションのインスタンス
      */
-    public static function startBase(array &$all, Model $model, Results $results, string $fieldName, ?array $row = null): ValField {
+    public static function startBase(array &$all, Model $model, ?array $row, string $fieldName, Results $results): ValField {
         $self = $all[$fieldName] ?? null;
         if (!$self) {
             // まだなければ作成する

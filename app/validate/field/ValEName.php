@@ -18,18 +18,19 @@ class ValEName extends ValField {
     }
     /**
      * @param Model $model 検証対象のモデル
-     * @param Results $results 検証結果保持
+     * @param ?array $row 検証対象の配列 
      * @param string $fieldName フィールド名
-     * @param ?array $row 検証対象の配列 省略=null 
+     * @param Results $results 検証結果保持
      * @return ValEname 検証インスタンス
      */
-    public static function start(Model $model, Results $results, string $fieldName, ?array $row = null): ValEName {
-        return self::startBase(self::$all, $model, $results, $fieldName, $row);
+    public static function start(Model $model, ?array $row, string $fieldName, Results $results): ValEName {
+        return self::startBase(self::$all, $model, $row, $fieldName, $results);
     }
     private static array $all = [];
 
     /**
      * @inheritDoc
+     * mandatory,checkHan,checkStr,checkENameの順に呼び出す
      */
     public function check(bool $mandatory = false): ValEName {
         $this->mandatory($mandatory)->checkHan()->checkStr();

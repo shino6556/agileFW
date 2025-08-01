@@ -20,19 +20,22 @@ abstract class ValModel {
      * バリデーションのインスタンスを取得する
      * @param ValModel &$self バリデーションのインスタンス
      * @param Model $model 対象のモデル
+     * @param ?array $row 対象の配列
      * @param Results $results 処理結果保持
      * @return ValModel バリデーションのインスタンス
      */
-    protected static function startBase(ValModel &$self, Model|array $model, Results $results): ValModel {
+    protected static function startBase(ValModel &$self, Model $model, ?array $row, Results $results): ValModel {
         if (!$self) {
             $self = new static();
         }
         self::$self->model = $model;
+        self::$self->row = $row;
         self::$self->results = $results;
         return self::$self;
     }
     private static ?ValModel $self = null;
-    protected Model|array $model;
+    protected Model $model;
+    protected ?array $row = null;
     protected Results $results;
 
     /**

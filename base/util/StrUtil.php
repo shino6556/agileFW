@@ -6,8 +6,6 @@ require_once __DIR__ . '/autoload.php';
 
 use Nnk2\Base\Util\TypeUtil;
 
-use Types as T;
-
 /**
  * 文字列操作ユーティリティ
  */
@@ -176,14 +174,14 @@ class StrUtil {
 		$type = TypeUtil::getType($value);
 		$result = '';
 		switch ($type) {
-			case T::NULL: // null : 空白文字へ
+			case Types::NULL: // null : 空白文字へ
 				$result = '';
 				break;
-			case T::BOOL:
+			case Types::BOOL:
 				$result = $value ? 'true' : 'false';
 				break;
-			case T::INT:
-			case T::FLOAT:
+			case Types::INT:
+			case Types::FLOAT:
 				if ($format == self::COMMA) {
 					$result = number_format($value); // 三桁区切り
 				} else if ($format) {
@@ -192,19 +190,19 @@ class StrUtil {
 					$result = '' . $value;
 				}
 				break;
-			case T::ARRAY: // 配列
+			case Types::ARRAY: // 配列
 				$result = ArrayUtil::toString($value, self::COMMA);
 				break;
-			case T::ENUM: // 列挙型
+			case Types::ENUM: // 列挙型
 				$result = self::enum2str($value);
 				break;
-			case T::DATETIME: // 日時
+			case Types::DATETIME: // 日時
 				$result = DateUtil::toString($value);
 				break;
-			case T::OBJECT: // オブジェクト
+			case Types::OBJECT: // オブジェクト
 				$result = get_class($value);
 				break;
-			case T::MODEL: // モデル
+			case Types::MODEL: // モデル
 				$array = $value->toArray();
 				$result = ArrayUtil::toString($array, self::COMMA);
 				break;
@@ -226,30 +224,33 @@ class StrUtil {
 	//// 文字種別変換 ////
 
 	/** @var string 半角英字へ変換 */
-	const CNV_HAN_ALPH = 'r';
+	public const string CNV_HAN_ALPH = 'r';
 	/** @var string 半角数字へ変換 */
-	const CNV_HAN_NUM = 'n';
+	public const string CNV_HAN_NUM = 'n';
 	/** @var string 半角英数記号へ変換 */
-	const CNV_HAN_ALNUM = 'a';
+	public const string CNV_HAN_ALNUM = 'a';
 	/** @var string 半角カナへ変換 */
-	const CNV_HAN_KATA = 'k';
+	public const string CNV_HAN_KATA = 'k';
 	/** @var string 半角記号へ変換 */
-	const CNV_HAN_SYM = '　！”＃＄％＆￥’（）－＾￥￥＠［］，．／＝～｜‘｛｝＜＞？＿';
+	public const string CNV_HAN_SYM = '　！”＃＄％＆￥’（）－＾￥￥＠［］，．／＝～｜‘｛｝＜＞？＿';
 
 	/** @var string 全角英字へ変換 */
-	const CNV_ZEN_ALPH = 'R';
+	public const string CNV_ZEN_ALPH = 'R';
 	/** @var string 全角数字へ変換 */
-	const CNV_ZEN_NUM = 'N';
+	public const string CNV_ZEN_NUM = 'N';
 	/** @var string 全角英数記号へ変換 */
-	const CNV_ZEN_ALNUM = 'A';
+	public const string CNV_ZEN_ALNUM = 'A';
 	/** @var string 全角カナへ変換 */
-	const CNV_ZEN_KATA = 'KV';
+	public const string CNV_ZEN_KATA = 'KV';
 	/** @var string 全角かなへ変換 */
-	const CNV_ZEN_HIRA = 'HV';
+	public const string CNV_ZEN_HIRA = 'HV';
 	/** @var string 全角記号へ変換 */
-	const CNV_ZEN_SYM = ' !"#$%&\'()-^\\@[],./=~|`{}<>?_';
+	public const string CNV_ZEN_SYM  = ' !"#$%&\'()-^\\@[],./=~|`{}<>?_';
+
 	/** @var string 半角記号 */
-	const HAN_SYM     = ' !"#$%&()^\\@[]/=~|`{}<>?_\',.-';
+	public const string HAN_SYM = ' !"#$%&()^\\@[]/=~|`{}<>?_\',.-';
+	/** @var string 全角記号 */
+	public const string ZEN_SYM = self::CNV_HAN_SYM;
 
 	/**
 	 * 指定した文字種別を変換する。  
@@ -375,6 +376,13 @@ class StrUtil {
 		return $len;
 	}
 
+	/**
+	 * 全角文字列の一部を取得する
+	 * @param string $a_str 対象文字列
+	 * @param int $a_offset 開始位置
+	 * @param int $a_length 取得する長さ
+	 * @return string 取得した文字列
+	 */
 	public static function zenSubstr(string $a_str, int $a_offset, int $a_length): string {
 		$l_str = mb_substr($a_str, $a_offset, $a_length);
 		$l_len = mb_strlen($l_str);
