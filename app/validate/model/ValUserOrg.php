@@ -6,9 +6,9 @@ require_once __DIR__ . '/autoload.php';
 
 use nnk2\base\util\Results;
 use nnk2\base\validate\model\ValModel;
+use nnk2\base\validate\field\ValJpName;
+use nnk2\base\validate\field\ValEmail;
 use nnk2\app\data\model\UserOrg;
-use nnk2\app\validate\field\ValJpName;
-use nnk2\app\validate\field\ValEmail;
 
 /**
  * ユーザ組織モデル単位のバリデーションのクラス  

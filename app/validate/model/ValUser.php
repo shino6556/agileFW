@@ -6,11 +6,11 @@ require_once __DIR__ . '/autoload.php';
 
 use nnk2\base\util\Results;
 use nnk2\base\validate\model\ValModel;
+use nnk2\base\validate\field\ValEName;
+use nnk2\base\validate\field\ValPassword;
+use nnk2\base\validate\field\ValEmail;
+use nnk2\base\validate\field\ValInt;
 use nnk2\app\data\model\User;
-use nnk2\app\validate\field\ValEName;
-use nnk2\app\validate\field\ValPassword;
-use nnk2\app\validate\field\ValEmail;
-use nnk2\app\validate\field\ValInt;
 
 /**
  * ユーザモデル単位のバリデーションのクラス  

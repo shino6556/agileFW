@@ -1,11 +1,10 @@
 <?php
 
-namespace nnk2\app\validate\field;
+namespace nnk2\base\validate\field;
 
 require_once __DIR__ . '/autoload.php';
 
 use nnk2\base\util\Results;
-use nnk2\base\util\StrUtil;
 use nnk2\base\data\model\Model;
 use nnk2\base\validate\field\ValField;
 

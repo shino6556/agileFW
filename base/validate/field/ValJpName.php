@@ -1,6 +1,6 @@
 <?php
 
-namespace nnk2\app\validate\field;
+namespace nnk2\base\validate\field;
 
 require_once __DIR__ . '/autoload.php';
 
