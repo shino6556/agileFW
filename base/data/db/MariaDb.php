@@ -4,10 +4,10 @@ namespace Nnk2\Base\data\db;
 
 require_once __DIR__ . '/autoload.php';
 
-use Nnk2\Base\data\db\Dbms;
-
 use Nnk2\Base\util\ConfigUtil;
 use Nnk2\Base\util\StrUtil;
+use Nnk2\Base\data\db\Dbms;
+use Nnk2\Base\data\db\Query;
 
 /**
  * MariaDB操作クラス
@@ -60,7 +60,7 @@ class MariaDb extends Dbms {
 	 * 比較演算子の文字列表現の一覧
 	 * @return array 全ての比較演算子 
 	 */
-	public const array ALL_OPs = [
+	public const array OP_LIST = [
 		'NOP' => "",
 		'EQ' => "{0} = {1}",
 		'NE' => "{0} <> {1}",
@@ -80,4 +80,5 @@ class MariaDb extends Dbms {
 		'OR' => " OR ",
 	];
 }
-Query::setOpList(MariaDb::ALL_OPs);
+// 比較演算子の文字列表現をセット
+Query::setOpList(MariaDb::OP_LIST);
