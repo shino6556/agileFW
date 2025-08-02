@@ -175,7 +175,7 @@ abstract class ValField {
         }
         return $this;
     }
-    private const string HAN_ALNUM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
     /**
      * フィールドの値が全角文字であることを検証する
      * @return ValField 検証インスタンス
@@ -190,7 +190,7 @@ abstract class ValField {
         if ($org !== $this->value) {
             $this->warning($this->name, $this->jpName . 'を全角文字に変換しました。');
         }
-        if (StrUtil::contains($this->value, StrUtil::HAN_SYM . self::HAN_ALNUM) === false) {
+        if (StrUtil::contains($this->value, StrUtil::HAN_ALNUMSYM) > 0) {
             $this->error($this->name, $this->jpName . 'は全角文字でなければなりません。');
         }
         return $this;

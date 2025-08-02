@@ -8,7 +8,7 @@ use nnk2\base\util\Results;
 use nnk2\base\validate\model\ValModel;
 use nnk2\app\data\model\User;
 use nnk2\app\validate\field\ValEName;
-
+use nnk2\app\validate\field\ValPassword;
 
 /**
  * ユーザモデル単位のバリデーションのクラス  
@@ -39,10 +39,10 @@ class ValUser extends ValModel {
     public function create(): ValUser {
         $model = User::cast($this->model);
         $res = $this->results;
-        ValEName::start($model, null, User::name,     $res)->check(true)->end();
-        ValEName::start($model, null, User::password, $res)->check(true)->end();
-        ValEName::start($model, null, User::email,    $res)->check(true)->end();
-        ValEName::start($model, null, User::belongId, $res)->check(true)->end();
+        ValEName::start($model,    null, User::name,     $res)->check(true)->end();
+        ValPassword::start($model, null, User::password, $res)->check(true)->end();
+        ValEName::start($model,    null, User::email,    $res)->check(true)->end();
+        ValEName::start($model,    null, User::belongId, $res)->check(true)->end();
         return $this;
     }
 

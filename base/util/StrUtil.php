@@ -247,8 +247,21 @@ class StrUtil {
 	/** @var string 全角記号へ変換 */
 	public const string CNV_ZEN_SYM  = ' !"#$%&\'()-^\\@[],./=~|`{}<>?_';
 
+	/** @var string 半角アルファベット */
+	public const string HAN_ALPH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	/** @var string 半角数字 */
+	public const string HAN_NUM = '0123456789';
 	/** @var string 半角記号 */
 	public const string HAN_SYM = ' !"#$%&()^\\@[]/=~|`{}<>?_\',.-';
+	/** @var string 半角アルファベット数字 */
+	public const string HAN_ALNUM = self::HAN_ALPH . self::HAN_NUM . self::HAN_SYM;
+	/** @var string 半角アルファベット数字記号 */
+	public const string HAN_ALNUMSYM = self::HAN_ALNUM . self::HAN_SYM;
+
+	/** @var string 全角アルファベット */
+	public const string ZEN_ALPH = 'ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ';
+	/** @var string 全角数字 */
+	public const string ZEN_NUM = '０１２３４５６７８９';
 	/** @var string 全角記号 */
 	public const string ZEN_SYM = self::CNV_HAN_SYM;
 
@@ -308,17 +321,17 @@ class StrUtil {
 	 * 文字列が検索文字列を一文字でも含むかどうか。
 	 * @param string $value 対象の文字列
 	 * @param string $search 検索文字列
-	 * @return bool true:見つかった場合
+	 * @return int 見つかった数
 	 */
-	public static function contains(string $value, string $search): bool {
+	public static function contains(string $value, string $search): int {
 		$searchs = mb_str_split($search);
+		$count = 0;
 		foreach ($searchs as $s) {
-			if (mb_strpos($value, $s) === false) {
-				// １も見つからない
-				return false;
+			if (mb_strpos($value, $s) !== false) {
+				$count++;
 			}
 		}
-		return true;
+		return $count;
 	}
 	/**
 	 * 文字列が数字のみかどうか
