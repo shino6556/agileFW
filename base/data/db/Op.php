@@ -44,34 +44,18 @@ enum Op {
     case OR;
 
     /**
-     * パラメータが必要な比較演算子かどうか
-     * @param Op $op 比較演算子
-     * @return bool true:パラメータが必要
-     */
-    public static function hasParam(Op $op): bool {
-        switch ($op) {
-            case self::NULL:
-            case self::NOT_NULL:
-            case self::AND:
-            case self::OR:
-            case self::NOP:
-            default:
-                return true;
-        }
-    }
-    /**
      * 必要なパラメータの数を返す
      * @param Op $op 比較演算子
-     * @return int パラメータの数
+     * @return int パラメータ数
      */
-    public static function numOfParam(Op $op): int {
+    public static function param(Op $op): int {
         switch ($op) {
             case self::NULL:
             case self::NOT_NULL:
             case self::AND:
             case self::OR:
             case self::NOP:
-                return 0;
+                return 0; // これらはパラメータを必要としない
             case self::BETWEEN:
                 return 2; // BETWEENは2つの値が必要
             default:

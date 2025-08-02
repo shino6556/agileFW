@@ -24,13 +24,10 @@ class Query {
 	public array $sort = [];
 
 	/** @var int 1ページの行数 */
-	public int $pageLines = 0;
+	public int $pageRows = 0;
 
 	/** @var int 取得ページ */
 	public int $page = 0;
-
-	/** @var array 検索パラメータ [パラメータ名=>値]の配列 */
-	public array $params = [];
 
 	/**
 	 * コンストラクタ
@@ -38,15 +35,15 @@ class Query {
 	 * @param array $fieldTypes [フィールド名=>データ型]の配列
 	 * @param array $conditions 条件式リスト
 	 * @param array $sort 並び順配列(省略=[]) 
-	 * @param int $pageLines 1ページの行数(省略=0) 
+	 * @param int $pageRows 1ページの行数(省略=0) 
 	 * @param int $page (ページ番号=0) 
 	 */
-	public function __construct(string $table, array $fieldTypes, array $conditions, array $sort = [], int $pageLines = 0, int $page = 0) {
+	public function __construct(string $table, array $fieldTypes, array $conditions, array $sort = [], int $pageRows = 0, int $page = 0) {
 		$this->table = $table;
 		$this->fieldTypes = $fieldTypes;
 		$this->conditions = $conditions;
 		$this->sort = $sort;
-		$this->pageLines = $pageLines;
+		$this->pageRows = $pageRows;
 		$this->page = $page;
 	}
 
