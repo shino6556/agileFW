@@ -1,6 +1,6 @@
 <?php
 
-namespace nnk2\base\data\db;
+namespace agileFW\base\data\db;
 
 require_once __DIR__ . '/autoload.php';
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace Nnk2\Base\Util;
+namespace agileFW\Base\Util;
 
 require_once __DIR__ . '/autoload.php';
 
 use \DateTime;
 use \Exception;
 use \ReflectionClass;
-use Nnk2\Base\data\model\Model;
-use Nnk2\Base\Util\StrUtil;
-use Nnk2\Base\Util\EnumUtil;
+use agileFW\Base\data\model\Model;
+use agileFW\Base\Util\StrUtil;
+use agileFW\Base\Util\EnumUtil;
 
 /**
  * 型判定ユーティリティ

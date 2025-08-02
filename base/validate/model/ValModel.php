@@ -1,11 +1,11 @@
 <?php
 
-namespace Nnk2\Base\validate\model;
+namespace agileFW\Base\validate\model;
 
 require_once __DIR__ . '/autoload.php';
 
-use Nnk2\Base\Util\Results;
-use Nnk2\Base\data\model\Model;
+use agileFW\Base\Util\Results;
+use agileFW\Base\data\model\Model;
 
 
 /**

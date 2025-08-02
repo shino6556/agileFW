@@ -1,10 +1,10 @@
 <?php
 
-namespace nnk2\app\logic;
+namespace agileFW\app\logic;
 
-use nnk2\base\logic\Logic;
-use nnk2\base\data\model\Model;
-use nnk2\app\data\model\UserOrg;
+use agileFW\base\logic\Logic;
+use agileFW\base\data\model\Model;
+use agileFW\app\data\model\UserOrg;
 
 class UserOrgLogic extends Logic {
     /**
@@ -44,3 +44,5 @@ class UserOrgLogic extends Logic {
         return $this->getModel($pkey);
     }
 }
+new UserOrgLogic(); // ロジックの初期化
+// これにより、UserOrgLogicが登録され、他の部分で利用可能になる

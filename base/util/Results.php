@@ -1,11 +1,11 @@
 <?php
 
-namespace Nnk2\Base\Util;
+namespace agileFW\Base\Util;
 
 require_once __DIR__ . '/autoload.php';
 
 use \Throwable;
-use Nnk2\Base\Util\StrUtil;
+use agileFW\Base\Util\StrUtil;
 
 /**
  * 処理結果記録クラス

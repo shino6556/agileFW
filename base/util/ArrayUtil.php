@@ -1,11 +1,11 @@
 <?php
 
-namespace Nnk2\Base\Util;
+namespace agileFW\Base\Util;
 
 require_once __DIR__ . '/autoload.php';
 
-use Nnk2\Base\Util\TypeUtil;
-use Nnk2\Base\Util\StrUtil;
+use agileFW\Base\Util\TypeUtil;
+use agileFW\Base\Util\StrUtil;
 
 /**
  * 配列の操作ユーティリティ
@@ -14,6 +14,9 @@ class ArrayUtil {
 	/** インスタンス化禁止 */
 	private function __construct() {
 	}
+
+	/** @var string キーが存在しない場合の値 */
+	public const NoKey = '##$$ NoKey $$##';
 
 	/**
 	 * 配列の要素を取得する
@@ -25,7 +28,6 @@ class ArrayUtil {
 	public static function get(mixed $array, mixed $key, mixed $def = null): mixed {
 		$val = $def;
 		$ok = self::enable($array, $key);
-		if ($ok === null) return NoVal;
 
 		if ($ok) {
 			$val = $array[$key];
@@ -41,7 +43,7 @@ class ArrayUtil {
 	 */
 	public static function remove(?array $array, int|string|null $key): bool {
 		$ok = self::enable($array, $key);
-		if ($ok === NoVal) return false;
+		if ($ok === self::NoKey) return false;
 
 		if ($ok) {
 			unset($array[$key]);

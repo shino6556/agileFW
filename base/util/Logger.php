@@ -1,17 +1,17 @@
 <?php
 
-namespace Nnk2\Base\Util;
+namespace agileFW\Base\Util;
 
 require_once __DIR__ . '/autoload.php';
 
 use \DateTime;
 use \Exception;
-use Nnk2\Base\Util\ArrayUtil;
-use Nnk2\Base\Util\ConfigUtil;
-use Nnk2\Base\Util\DateUtil;
-use Nnk2\Base\Util\Results;
-use Nnk2\Base\Util\StrUtil;
-use Nnk2\Base\Util\ResultInfo;
+use agileFW\Base\Util\ArrayUtil;
+use agileFW\Base\Util\ConfigUtil;
+use agileFW\Base\Util\DateUtil;
+use agileFW\Base\Util\Results;
+use agileFW\Base\Util\StrUtil;
+use agileFW\Base\Util\ResultInfo;
 
 /**
  * ログ出力機能を付加する

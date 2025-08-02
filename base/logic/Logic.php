@@ -1,16 +1,16 @@
 <?php
 
-namespace Nnk2\Base\logic;
+namespace agileFW\Base\logic;
 
 require_once __DIR__ . '/autoload.php';
 
-use nnk2\base\data\db\Dbms;
-use nnk2\base\data\db\Query;
-use nnk2\base\data\model\Model;
-use nnk2\base\data\model\Field;
-use nnk2\base\util\ArrayUtil;
-use nnk2\base\util\DateUtil;
-use nnk2\base\util\Logger;
+use agileFW\base\data\db\Dbms;
+use agileFW\base\data\db\Query;
+use agileFW\base\data\model\Model;
+use agileFW\base\data\model\Field;
+use agileFW\base\util\ArrayUtil;
+use agileFW\base\util\DateUtil;
+use agileFW\base\util\Logger;
 
 /**
  * モデルと対に自動生成され、モデルのCRUDを提供する。  
@@ -102,13 +102,43 @@ abstract class Logic {
 		return $this->getSeed()->fields();
 	}
 
+	private const string LOGIC_PREFIX = 'agileFW\app\logic\\';
+
+	/**
+	 * モデル名からロジック名を取得する  
+	 * @param string $modelName モデル名
+	 * @return string ロジック名
+	 */
+	public static function getLogicNameByModelName(string $modelName): string {
+		$array = explode('\\', $modelName);
+		$className = array_pop($array) . 'Logic';
+		$logicName = self::LOGIC_PREFIX . $className;
+		return $logicName;
+	}
+	/**
+	 * モデル名からロジックを取得する  
+	 * @param string $modelName モデル名
+	 * @return ?Logic null:見つからなかった場合
+	 */
+	public static function getLogicByName(string $modelName): ?Logic {
+		$logicName = self::getLogicNameByModelName($modelName);
+		$logic = ArrayUtil::get(self::$allLogics, $logicName);
+		if ($logic === null) {
+			$logic = new $logicName();
+		}
+		return $logic;
+	}
 	/**
 	 * モデル名で対応するロジックを取得する
 	 * @param string $modelName モデル名
 	 * @return ?Logic null:見つからなかった場合
 	 */
 	public static function getLogic(string $modelName): ?Logic {
-		return ArrayUtil::get(self::$allLogics, $modelName . 'Logic');
+		$logic = ArrayUtil::get(self::$allLogics, $modelName . 'Logic');
+		if ($logic instanceof Logic === false) {
+			$logic = self::getLogicByName($modelName);
+		}
+		return $logic;
 	}
 
 	/**
@@ -127,6 +157,10 @@ abstract class Logic {
 			// 主キーが0なら新規登録
 			$pkey = --$this->newPkey;
 			$model->setPkey($pkey);
+		}
+		$other = ArrayUtil::get($this->allModels, $pkey);
+		if ($other) {
+			$model = $other; // 既に登録済みならそれを返す
 		}
 		if ($pkey <= 0 && isset($this->exists[$pkey]) === false) {
 			// 新規登録にモデルを追加

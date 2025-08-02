@@ -1,13 +1,13 @@
 <?php
 
-namespace Nnk2\Base\data\db;
+namespace agileFW\Base\data\db;
 
 require_once __DIR__ . '/autoload.php';
 
-use Nnk2\Base\util\ConfigUtil;
-use Nnk2\Base\util\StrUtil;
-use Nnk2\Base\data\db\Dbms;
-use Nnk2\Base\data\db\Query;
+use agileFW\Base\util\ConfigUtil;
+use agileFW\Base\util\StrUtil;
+use agileFW\Base\data\db\Dbms;
+use agileFW\Base\data\db\Query;
 
 /**
  * MariaDB操作クラス

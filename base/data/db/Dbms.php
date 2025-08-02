@@ -1,18 +1,18 @@
 <?php
 
-namespace Nnk2\Base\data\db;
+namespace agileFW\Base\data\db;
 
 require_once __DIR__ . '/autoload.php';
 
 use PDO;
 use PDOException;
 use PDOStatement;
-use Nnk2\Base\data\db\Query;
-use Nnk2\Base\util\ArrayUtil;
-use Nnk2\Base\util\ConfigUtil;
-use Nnk2\Base\util\Logger;
-use Nnk2\Base\util\StrUtil;
-use Nnk2\Base\util\Types;
+use agileFW\Base\data\db\Query;
+use agileFW\Base\util\ArrayUtil;
+use agileFW\Base\util\ConfigUtil;
+use agileFW\Base\util\Logger;
+use agileFW\Base\util\StrUtil;
+use agileFW\Base\util\Types;
 
 /**
  * DBMSの抽象基底クラス  

@@ -1,14 +1,14 @@
 <?php
 
-namespace nnk2\app\logic;
+namespace agileFW\app\logic;
 
-use nnk2\base\logic\Logic;
-use nnk2\base\Data\db\Query;
-use nnk2\base\Data\db\Op;
-use nnk2\base\data\model\Model;
-use nnk2\base\data\model\Field;
-use nnk2\app\data\model\User;
-use nnk2\app\logic\UserOrgLogic;
+use agileFW\base\logic\Logic;
+use agileFW\base\Data\db\Query;
+use agileFW\base\Data\db\Op;
+use agileFW\base\data\model\Model;
+use agileFW\base\data\model\Field;
+use agileFW\app\data\model\User;
+use agileFW\app\logic\UserOrgLogic;
 
 class UserLogic extends Logic {
     /**
@@ -58,3 +58,5 @@ class UserLogic extends Logic {
         return $user;
     }
 }
+new UserLogic(); // ロジックの初期化
+// これにより、UserLogicが登録され、他の部分で利用可能になる

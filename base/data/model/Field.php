@@ -1,11 +1,11 @@
 <?php
 
-namespace Nnk2\Base\data\model;
+namespace agileFW\Base\data\model;
 
 require_once __DIR__ . '/autoload.php';
 
-use Nnk2\Base\Util\Types;
-use Nnk2\Base\data\db\DbTypes;
+use agileFW\Base\Util\Types;
+use agileFW\Base\data\db\DbTypes;
 
 /**
  * モデルのフィールドを表すクラス  

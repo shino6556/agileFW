@@ -1,21 +1,19 @@
 <?php
 
-namespace Nnk2\Base\data\model;
+namespace agileFW\Base\data\model;
 
 require_once __DIR__ . '/autoload.php';
 
 use DateTime;
-use Nnk2\Base\Util\ArrayUtil;
-use Nnk2\Base\Util\Results;
-use Nnk2\Base\Util\StrUtil;
-use Nnk2\Base\Util\Types;
-use Nnk2\Base\logic\Logic;
-use Nnk2\Base\data\db\DbTypes;
+use agileFW\Base\Util\ArrayUtil;
+use agileFW\Base\Util\Results;
+use agileFW\Base\Util\StrUtil;
+use agileFW\Base\Util\Types;
+use agileFW\Base\logic\Logic;
+use agileFW\Base\data\db\DbTypes;
 
 /**
  * モデルの抽象基底クラス
- * フィールドの値はnullを必ず含めること。
- * デフォルトで全フィールドをANDで繋いだ検索定義を持つ。
  * @abstract
  */
 abstract class Model {
@@ -23,8 +21,9 @@ abstract class Model {
 	 * コンストラクタ
 	 * @param int $pkey 主キー (省略 = 0 :新規作成)
 	 * 主キーが0の場合、モデルは新規作成される。
+	 * モデルはnewModel()で生成されるため、コンストラクタは非公開。
 	 */
-	public function __construct(int $pkey = 0) {
+	protected function __construct(int $pkey = 0) {
 		$this->pkey = $pkey === 0 ? self::$psuedoPkey-- : $pkey;
 		$this->activated = false;
 	}
@@ -32,11 +31,29 @@ abstract class Model {
 	private static int $psuedoPkey = -1; // 仮主キー
 
 	/**
+	 * モデルを登録する  
+	 * すでに登録済みのモデルは、登録したものに置き換えられる  
+	 * 主キーが0の場合、モデルは新規作成される。
+	 * @param Model $model モデル (pkey = 0 :新規作成)
+	 * @return Model 新規作成/取得されたモデル
+	 */
+	public static function newModel(Model $model): Model {
+		$model = $model->getLogicBase()->register($model, false);
+		return $model;
+	}
+
+	/**
 	 * モデル名を返す
 	 * @return string モデル名
 	 * @abstract
 	 */
 	abstract public function modelName(): string;
+
+	/**
+	 * 基底ロジックを取得する
+	 * @return Logic 基底ロジック
+	 */
+	abstract public function getLogicBase(): Logic;
 
 	/**
 	 * 固有フィールド定義の一覧を返す

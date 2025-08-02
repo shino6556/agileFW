@@ -1,11 +1,11 @@
 <?php
 
-namespace Nnk2\Base\data\db;
+namespace agileFW\Base\data\db;
 
 require_once __DIR__ . '/autoload.php';
 
-use Nnk2\Base\data\db\Op;
-use Nnk2\Base\util\ArrayUtil;
+use agileFW\Base\data\db\Op;
+use agileFW\Base\util\ArrayUtil;
 
 /**
  * 検索条件クラス

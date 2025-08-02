@@ -1,10 +1,10 @@
 <?php
 
-namespace Nnk2\Base\Util;
+namespace agileFW\Base\Util;
 
 require_once __DIR__ . '/autoload.php';
 
-use Nnk2\Base\Util\TypeUtil;
+use agileFW\Base\Util\TypeUtil;
 
 /**
  * 文字列操作ユーティリティ

@@ -1,15 +1,15 @@
 <?php
 
-namespace nnk2\app\data\model;
+namespace agileFW\app\data\model;
 
 require_once __DIR__ . '/autoload.php';
 
-use nnk2\base\util\Types;
-use nnk2\base\data\model\Model;
-use nnk2\base\data\model\Field;
-use nnk2\base\data\db\DbTypes;
-use nnk2\base\logic\Logic;
-use nnk2\app\logic\UserOrgLogic;
+use agileFW\base\util\Types;
+use agileFW\base\data\model\Model;
+use agileFW\base\data\model\Field;
+use agileFW\base\data\db\DbTypes;
+use agileFW\base\logic\Logic;
+use agileFW\app\logic\UserOrgLogic;
 
 /**
  * ユーザ組織モデル  
@@ -17,10 +17,12 @@ use nnk2\app\logic\UserOrgLogic;
  */
 class UserOrg extends Model {
     /**
-     * @inheritDoc
+     * 組織を新規作成/取得する
+     * @param int $pkey 主キー 省略 = 0 : 新規作成
+     * @return UserOrg 新規作成/取得された組織モデル
      */
-    public function __construct(int $pkey = 0) {
-        $this->setPkey($pkey);
+    public static function new(int $pkey = 0): UserOrg {
+        return Model::newModel(new UserOrg($pkey));
     }
 
     /**
@@ -45,13 +47,19 @@ class UserOrg extends Model {
     public static function cast(mixed $var): ?UserOrg {
         return ($var instanceof UserOrg) ? $var : null;
     }
-
     /**
      * @inheritDoc
      */
+    public function getLogicBase(): Logic {
+        return Logic::getLogic($this->modelName());
+    }
+
+    /**
+     * このモデルを管理するロジックを返す
+     * @return UserOrgLogic ユーザロジック
+     */
     protected function getLogic(): UserOrgLogic {
-        $logic = Logic::getLogic($this->modelName());
-        return $logic;
+        return $this->getLogicBase();
     }
 
     /**

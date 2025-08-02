@@ -1,0 +1,1 @@
+{"version":1,"defects":{"UserTest::testNewUser":5,"UserTest::testGetPkey":5,"UserTest::testGetLogic":5},"times":{"UserTest::testNewUser":0.009,"UserTest::testGetPkey":0.001,"UserTest::testGetLogic":0.001}}

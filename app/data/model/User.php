@@ -1,16 +1,16 @@
 <?php
 
-namespace nnk2\app\data\model;
+namespace agileFW\app\data\model;
 
 require_once __DIR__ . '/autoload.php';
 
-use nnk2\base\util\Types;
-use nnk2\base\data\model\Model;
-use nnk2\base\data\model\Field;
-use nnk2\base\data\db\DbTypes;
-use nnk2\base\logic\Logic;
-use nnk2\app\logic\UserLogic;
-use nnk2\app\data\model\UserOrg;
+use agileFW\base\util\Types;
+use agileFW\base\data\model\Model;
+use agileFW\base\data\model\Field;
+use agileFW\base\data\db\DbTypes;
+use agileFW\base\logic\Logic;
+use agileFW\app\logic\UserLogic;
+use agileFW\app\data\model\UserOrg;
 
 /**
  * ユーザモデル  
@@ -18,12 +18,13 @@ use nnk2\app\data\model\UserOrg;
  */
 class User extends Model {
 	/**
-	 * @inheritDoc
+	 * ユーザを新規作成/取得する
+	 * @param int $pkey 主キー 省略 = 0 : 新規作成
+	 * @return User 新規作成/取得されたユーザモデル
 	 */
-	public function __construct(int $pkey = 0) {
-		parent::__construct($pkey);
+	public static function new(int $pkey = 0): User {
+		return Model::newModel(new User($pkey));
 	}
-
 	/**
 	 * @inheritDoc
 	 */
@@ -38,11 +39,18 @@ class User extends Model {
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function getLogicBase(): Logic {
+		return Logic::getLogic($this->modelName());
+	}
+
+	/**
 	 * このモデルを管理するロジックを返す
 	 * @return UserLogic ユーザロジック
 	 */
 	protected function getLogic(): UserLogic {
-		return Logic::getLogic($this->modelName());
+		return $this->getLogicBase();
 	}
 
 	/**

@@ -1,14 +1,14 @@
 <?php
 
-namespace nnk2\app\validate\model;
+namespace agileFW\app\validate\model;
 
 require_once __DIR__ . '/autoload.php';
 
-use nnk2\base\util\Results;
-use nnk2\base\validate\model\ValModel;
-use nnk2\base\validate\field\ValJpName;
-use nnk2\base\validate\field\ValEmail;
-use nnk2\app\data\model\UserOrg;
+use agileFW\base\util\Results;
+use agileFW\base\validate\model\ValModel;
+use agileFW\base\validate\field\ValJpName;
+use agileFW\base\validate\field\ValEmail;
+use agileFW\app\data\model\UserOrg;
 
 /**
  * ユーザ組織モデル単位のバリデーションのクラス  

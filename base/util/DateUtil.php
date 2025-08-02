@@ -1,13 +1,13 @@
 <?php
 
-namespace Nnk2\Base\Util;
+namespace agileFW\Base\Util;
 
 require_once __DIR__ . '/autoload.php';
 
 use DateTime;
 use DateInterval;
-use Nnk2\Base\Util\ArrayUtil;
-use Nnk2\Base\Util\StrUtil;
+use agileFW\Base\Util\ArrayUtil;
+use agileFW\Base\Util\StrUtil;
 
 final class DateUtil {
 	/** インスタンス化を禁止 */

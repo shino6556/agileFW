@@ -1,11 +1,11 @@
 <?php
 
-namespace nnk2\base\util;
+namespace agileFW\base\util;
 
 require_once __DIR__ . '/autoload.php';
 
 use Exception;
-use nnk2\base\util\Logger;
+use agileFW\base\util\Logger;
 
 /**
  * ファイル操作ユーティリティ

@@ -1,10 +1,10 @@
 <?php
 
-namespace Nnk2\Base\Util;
+namespace agileFW\Base\Util;
 
 require_once __DIR__ . '/autoload.php';
 
-use Nnk2\Base\Util\ArrayUtil;
+use agileFW\Base\Util\ArrayUtil;
 
 /**
  * 設定ファイルを操作するユーティリティ

@@ -1,10 +1,10 @@
 <?php
 
-namespace nnk2\base\util;
+namespace agileFW\base\util;
 
 require_once __DIR__ . '/autoload.php';
 
-use nnk2\base\util\ArrayUtil;
+use agileFW\base\util\ArrayUtil;
 
 /**
  * enum 操作ユーティリティ  
