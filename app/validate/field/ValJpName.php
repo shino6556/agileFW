@@ -30,7 +30,7 @@ class ValJpName extends ValField {
      * @inheritDoc
      * mandatory,checkZen,checkStr,checkJpNameの順に呼び出す
      */
-    public function check(bool $mandatory = false): ValJpName {
+    public function check(bool $mandatory = false, int|string ...$arg): ValJpName {
         $this->mandatory($mandatory)->checkZen()->checkStr();
         return $this->checkJpName();
     }

@@ -32,7 +32,7 @@ class ValEName extends ValField {
      * @inheritDoc
      * mandatory,checkHan,checkStr,checkENameの順に呼び出す
      */
-    public function check(bool $mandatory = false): ValEName {
+    public function check(bool $mandatory = false, int|string ...$arg): ValEName {
         $this->mandatory($mandatory)->checkHan()->checkStr();
         return $this->checkEName();
     }

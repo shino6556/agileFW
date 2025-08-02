@@ -9,6 +9,7 @@ use nnk2\base\validate\model\ValModel;
 use nnk2\app\data\model\User;
 use nnk2\app\validate\field\ValEName;
 use nnk2\app\validate\field\ValPassword;
+use nnk2\app\validate\field\ValInt;
 
 /**
  * ユーザモデル単位のバリデーションのクラス  
@@ -42,7 +43,7 @@ class ValUser extends ValModel {
         ValEName::start($model,    null, User::name,     $res)->check(true)->end();
         ValPassword::start($model, null, User::password, $res)->check(true)->end();
         ValEName::start($model,    null, User::email,    $res)->check(true)->end();
-        ValEName::start($model,    null, User::belongId, $res)->check(true)->end();
+        ValInt::start($model,      null, User::belongId, $res)->check(true)->end();
         return $this;
     }
 
@@ -53,10 +54,10 @@ class ValUser extends ValModel {
         $model = User::cast($this->model);
         $row = $this->row;
         $res = $this->results;
-        ValEName::start($model, $row, User::name,     $res)->check()->end();
-        ValEName::start($model, $row, User::password, $res)->check()->end();
-        ValEName::start($model, $row, User::email,    $res)->check()->end();
-        ValEName::start($model, $row, User::belongId, $res)->check()->end();
+        ValEName::start($model,    $row, User::name,     $res)->check()->end();
+        ValPassword::start($model, $row, User::password, $res)->check()->end();
+        ValEName::start($model,    $row, User::email,    $res)->check()->end();
+        ValInt::start($model,      $row, User::belongId, $res)->check()->end();
         return $this;
     }
 
@@ -66,10 +67,10 @@ class ValUser extends ValModel {
     public function update(): ValUser {
         $model = User::cast($this->model);
         $res = $this->results;
-        ValEName::start($model, null, User::name,     $res)->check(true)->end();
-        ValEName::start($model, null, User::password, $res)->check(true)->end();
-        ValEName::start($model, null, User::email,    $res)->check(true)->end();
-        ValEName::start($model, null, User::belongId, $res)->check(true)->end();
+        ValEName::start($model,    null, User::name,     $res)->check(true)->end();
+        ValPassword::start($model, null, User::password, $res)->check(true)->end();
+        ValEName::start($model,    null, User::email,    $res)->check(true)->end();
+        ValInt::start($model,      null, User::belongId, $res)->check(true)->end();
         return $this;
     }
 

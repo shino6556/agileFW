@@ -32,7 +32,7 @@ class ValPassword extends ValField {
      * @inheritDoc
      * mandatory,checkHan,checkStr,checkPassword の順に呼び出す
      */
-    public function check(bool $mandatory = false): self {
+    public function check(bool $mandatory = false, int|string ...$arg): self {
         $this->mandatory($mandatory)->checkHan()->checkStr();
         return $this->checkPassword();
     }

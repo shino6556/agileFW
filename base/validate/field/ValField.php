@@ -130,9 +130,10 @@ abstract class ValField {
     /**
      * フィールドの値の変換・検証を行う
      * @param bool $mandatory true:必須 省略=false:任意
+     * @param int|string ...$arg 追加の引数
      * @return ValField 検証インスタンス
      */
-    abstract public function check(bool $mandatory = false): ValField;
+    abstract public function check(bool $mandatory = false, int|string ...$args): ValField;
 
     /**
      * バリデーションの結果を返す
