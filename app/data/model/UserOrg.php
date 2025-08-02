@@ -16,25 +16,27 @@ use nnk2\app\logic\UserOrgLogic;
  * ユーザが所属する組織を表すモデル。
  */
 class UserOrg extends Model {
+    /**
+     * @inheritDoc
+     */
     public function __construct(int $pkey = 0) {
         $this->setPkey($pkey);
     }
 
     /**
-     * モデル名を返す
-     * @return string モデル名
+     * @inheritDoc
      */
     public function modelName(): string {
         return __CLASS__;
     }
 
     /**
-     * テーブル名を返す
-     * @return string テーブル名
+     * @inheritDoc
      */
     public function tableName(): string {
         return 't_user_org';
     }
+
     /**
      * UserOrgにキャストする
      * @param mixed $var キャストする値
@@ -45,13 +47,23 @@ class UserOrg extends Model {
     }
 
     /**
-     * ロジックを取得する
-     * @return UserOrgLogic ユーザ組織ロジック
+     * @inheritDoc
      */
     protected function getLogic(): UserOrgLogic {
         $logic = Logic::getLogic($this->modelName());
         return $logic;
     }
+
+    /**
+     * モデルを活性化させる  
+     * @param bool $isSetter true:更新された(省略 = true)
+     * @return UserOrg this
+     */
+    protected function act(bool $isSetter = true): UserOrg {
+        return $this->actBase($isSetter);
+    }
+
+    // モデルのフィールド定義 ===========================================
 
     /** @var string 組織名 */
     public const string name = 'name';
@@ -77,31 +89,31 @@ class UserOrg extends Model {
     }
 
 
-    //// プロパティのセット/取得 ////
+    // プロパティのセット/取得 ================================
 
     public function getName(): ?string {
-        return $this->name;
+        return $this->act()->name;
     }
     public function setName(string $val): ?UserOrg {
-        $this->name = $val;
+        $this->act(true)->name = $val;
         return $this;
     }
     private ?string $name = null;
 
     public function getEmail(): ?string {
-        return $this->email;
+        return $this->act()->email;
     }
     public function setEmail(string $val): ?UserOrg {
-        $this->email = $val;
+        $this->act(true)->email = $val;
         return $this;
     }
     private ?string $email = null;
 
     public function getAddress(): ?string {
-        return $this->address;
+        return $this->act()->address;
     }
     public function setAddress(string $val): ?UserOrg {
-        $this->address = $val;
+        $this->act(true)->address = $val;
         return $this;
     }
     private ?string $address = null;
