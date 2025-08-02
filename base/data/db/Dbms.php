@@ -55,7 +55,7 @@ abstract class Dbms {
 
 	/**
 	 * DBサーバ接続
-	 * @param string $confFile 設定ファイル名(省略 = 基底のCONFIG_FILE)
+	 * @param string $confFile 設定ファイル名(省略 = 規定のCONFIG_FILE)
 	 * @return DbErrors
 	 */
 	public function connect(string $confFile = ''): DbErrors {
