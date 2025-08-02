@@ -10,7 +10,7 @@ use Nnk2\Base\util\ConfigUtil;
 use Nnk2\Base\util\StrUtil;
 
 /**
- * MariaDB操作のロジック
+ * MariaDB操作クラス
  */
 class MariaDb extends Dbms {
 	/**
@@ -24,6 +24,9 @@ class MariaDb extends Dbms {
 	}
 	private static ?MariaDb $self = null;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function className(): string {
 		return __CLASS__;
 	}
@@ -37,15 +40,18 @@ class MariaDb extends Dbms {
 	const CNF_CHARSET = 'CHARSET';
 
 	/** 
-	 * 接続文字列を返す
-	 * @return string DB接続文字列テンプレート
+	 * @inheritDoc
 	 */
-	protected function getConnectionString(): string {
+	protected function getConnectionString(string $confFile = ''): string {
+		if ($confFile === '') {
+			$confFile = self::CONFIG_FILE;
+		}
+		// 設定ファイルからDB接続情報を取得
 		$keyVal = [
-			'dbname'  => ConfigUtil::get(self::CNF_DBNAME, self::CONFIG_FILE),
-			'host'    => ConfigUtil::get(self::CNF_HOST, self::CONFIG_FILE),
-			'port'    => ConfigUtil::get(self::CNF_PORT, self::CONFIG_FILE),
-			'charset' => ConfigUtil::get(self::CNF_CHARSET, self::CONFIG_FILE),
+			'dbname'  => ConfigUtil::get(self::CNF_DBNAME, $confFile),
+			'host'    => ConfigUtil::get(self::CNF_HOST, $confFile),
+			'port'    => ConfigUtil::get(self::CNF_PORT, $confFile),
+			'charset' => ConfigUtil::get(self::CNF_CHARSET, $confFile),
 		];
 		$str = StrUtil::embed(self::DB_CONNECTION_STR, $keyVal);
 		return $str;

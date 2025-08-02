@@ -8,11 +8,10 @@ use nnk2\app\data\model\UserOrg;
 
 class UserOrgLogic extends Logic {
     /**
-     * ロジックを返す  
-     * @return UserOrgLogic ロジック
+     * {@inheritdoc}
      */
     public static function newLogic(): UserOrgLogic {
-        return self::newLogicBase('UserOrgLogic');
+        return self::newLogic(__CLASS__);
     }
 
     /**
@@ -32,11 +31,16 @@ class UserOrgLogic extends Logic {
     /**
      * {@inheritdoc}
      */
-    public function newModel(int $pkey = 0): Model {
-        return new UserOrg($pkey);
+    public function newModel(?int $pkey = 0): Model {
+        return $this->register(new UserOrg($pkey));
     }
 
-    public function getModel(int $pkey): ?UserOrg {
-        return $this->getModelBase($pkey);
+    /**
+     * 主キーでユーザ組織を取得する
+     * @param int $pkey 主キー
+     * @return ?UserOrg ユーザ組織モデル null:見つ
+     */
+    public function get(int $pkey): ?UserOrg {
+        return $this->getModel($pkey);
     }
 }

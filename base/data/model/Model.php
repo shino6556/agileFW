@@ -109,7 +109,7 @@ abstract class Model {
 	 */
 	public function jpName(string $name): ?string {
 		$field = $this->field($name);
-		return $field ? $field->displayName : null;
+		return $field ? $field->jpName : null;
 	}
 	/**
 	 * フィールドのデータ型を返す
@@ -154,7 +154,7 @@ abstract class Model {
 	 */
 	public function def(string $name): mixed {
 		$field = $this->field($name);
-		return $field ? $field->defaultValue : null;
+		return $field ? $field->defValue : null;
 	}
 	/**
 	 * フィールドの関連先モデル名を返す
@@ -182,8 +182,8 @@ abstract class Model {
 	 */
 	public function getFieldNames(bool $onlyOwnFields = false): array {
 		if ($onlyOwnFields) {
-			$fields = [self::pkey];
-			$fields = ArrayUtil::append($fields, array_keys($this->ownFields()));
+			$fields = [self::pkey => 1];
+			$fields = ArrayUtil::append($fields, $this->ownFields());
 		} else {
 			$fields = $this->fields();
 		}
@@ -284,13 +284,13 @@ abstract class Model {
 
 	// プロパティのセット/取得 ==========================
 
-	public function setPkey(int $val) {
+	public function setPkey(?int $val) {
 		$this->pkey = $val;
 	}
-	public function getPkey(): int {
+	public function getPkey(): ?int {
 		return $this->pkey;
 	}
-	private int $pkey = 0;
+	private ?int $pkey = 0;
 
 	public function setCreateDate(?DateTime $val, bool $update = true) {
 		$this->actBase($update)->createDate = $val;

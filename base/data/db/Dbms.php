@@ -17,7 +17,6 @@ use Nnk2\Base\util\Types;
 /**
  * DBMSの抽象基底クラス  
  * 連想配列ベースでデータの読み書き検索を行う  
- * TODO:呼ばれたAPP毎に違うDBにアクセスする仕組みが必要 -> DB名だけ個別のdbconfig.iniから読み取る
  */
 abstract class Dbms {
 	use Logger;
@@ -28,13 +27,18 @@ abstract class Dbms {
 	protected function __construct() {
 	}
 
+	/**
+	 * クラス名を返す
+	 * @return string クラス名
+	 */
 	abstract public function className(): string;
 
 	/**
 	 * DB接続文字列を返す
+	 * @param string $confFile 設定ファイル名
 	 * @return string DB接続文字列
 	 */
-	abstract protected function getConnectionString(): string;
+	abstract protected function getConnectionString(string $confFile): string;
 
 	/** @var string const DB設定ファイル  */
 	const CONFIG_FILE = 'dbconfig.ini';
@@ -51,16 +55,18 @@ abstract class Dbms {
 
 	/**
 	 * DBサーバ接続
+	 * @param string $confFile 設定ファイル名(省略 = 基底のCONFIG_FILE)
 	 * @return DbErrors
 	 */
-	public function connect(): DbErrors {
+	public function connect(string $confFile = ''): DbErrors {
+		$confFile = $confFile ?: self::CONFIG_FILE;
 		$this->start(__METHOD__);
 		$result = DbErrors::SUCCESS;
 		if (!self::$PDO) {
 			try {
-				$str = $this->getConnectionString();
-				$user = ConfigUtil::get(self::USER, self::CONFIG_FILE);
-				$pass = ConfigUtil::get(self::PASS, self::CONFIG_FILE);
+				$str = $this->getConnectionString($confFile);
+				$user = ConfigUtil::get(self::USER, $confFile);
+				$pass = ConfigUtil::get(self::PASS, $confFile);
 				self::$PDO = new PDO($str, $user, $pass);
 				self::$PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				$this->trace(1, __METHOD__, 'success');
@@ -384,10 +390,10 @@ abstract class Dbms {
 			$sortStr = ArrayUtil::toString($query->sort);
 			$sql .= ' order by ' . $sortStr;
 		}
-		if ($query->pageLines) {
-			$sql .= ' limit ' . $query->pageLines;
+		if ($query->pageRows) {
+			$sql .= ' limit ' . $query->pageRows;
 			if ($query->page) {
-				$offset = $query->page * $query->pageLines;
+				$offset = $query->page * $query->pageRows;
 				$sql .= ' offset ' . $offset;
 			}
 		}
@@ -563,7 +569,7 @@ abstract class Dbms {
 				continue;
 			}
 			// パラメータが必要な演算子の場合、対応するパラメータが無ければ無視
-			if (Op::hasParam($op) && $this->isHolder($field, $param1)) {
+			if (Op::param($op) >= 1 && $this->isHolder($field, $param1)) {
 				$val1 = ArrayUtil::get($params, $param1);
 				if ($val1 === null) continue;
 			}
@@ -594,9 +600,9 @@ abstract class Dbms {
 	 * パラメータがフィールド名で始まればプレースホルダ、それ以外は即値として返す
 	 * @param string $field フィールド名
 	 * @param mixed $param パラメータ
-	 * @return bool|int|string プレースホルダ、または即値
+	 * @return int|string プレースホルダ、または即値
 	 */
-	protected function makeHolder(string $field, mixed $param): bool|int|string {
+	protected function makeHolder(string $field, mixed $param): int|string {
 		if ($param === null) return '';
 
 		// 即値：配列(IN用)

@@ -7,6 +7,7 @@ require_once __DIR__ . '/autoload.php';
 use nnk2\base\data\db\Dbms;
 use nnk2\base\data\db\Query;
 use nnk2\base\data\model\Model;
+use nnk2\base\data\model\Field;
 use nnk2\base\util\ArrayUtil;
 use nnk2\base\util\DateUtil;
 use nnk2\base\util\Logger;
@@ -69,6 +70,8 @@ abstract class Logic {
 
 	/**
 	 * モデルのインスタンスを新規生成する。  
+	 * @param int $pkey 主キー (省略 = 0)
+	 * @return Model 新規モデル
 	 * 派生クラスで下記のように実装する。
 	 * ```php
 	 * protected function newModel(int $pkey): Model {
@@ -79,7 +82,7 @@ abstract class Logic {
 	 * }
 	 * ```
 	 */
-	abstract protected function newModel(int $pkey): Model;
+	abstract protected function newModel(?int $pkey = 0): Model;
 
 	/**
 	 * フィールド情報を得るため、モデルのインスタンスを返す。  
@@ -87,7 +90,7 @@ abstract class Logic {
 	 */
 	protected function getSeed(): Model {
 		if (!isset($this->seed)) {
-			$this->seed = $this->newModel(0);
+			$this->seed = $this->newModel(null);
 		}
 		return $this->seed;
 	}
@@ -96,7 +99,7 @@ abstract class Logic {
 	 * @return array フィールド情報
 	 */
 	protected function fields(): array {
-		return $this->getSeed()->getFields();
+		return $this->getSeed()->fields();
 	}
 
 	/**
@@ -116,7 +119,16 @@ abstract class Logic {
 	 */
 	public function register(Model $model, bool $updated = false): Model {
 		$pkey = $model->getPkey();
-		if ($pkey < 0 && isset($exists[$pkey]) === false) {
+		if ($pkey === null) {
+			// 主キーがnullならシード
+			return $model;
+		}
+		if ($pkey === 0) {
+			// 主キーが0なら新規登録
+			$pkey = --$this->newPkey;
+			$model->setPkey($pkey);
+		}
+		if ($pkey <= 0 && isset($this->exists[$pkey]) === false) {
 			// 新規登録にモデルを追加
 			$this->createdModels[] = $model;
 			$this->exists[$pkey] = true;
@@ -141,13 +153,13 @@ abstract class Logic {
 	 * 派生クラスで下記のように実装する。
 	 * ```php
 	 * protected function getModel(int $pkey=0): User {
-	 *     return $this->getModelBase($pkey);
+	 *     return $this->getModel($pkey);
 	 * }
 	 * ```
 	 * @param int $pkey 主キー (省略 = 0)
 	 * @return Model
 	 */
-	public function getModelBase(int $pkey = 0): Model {
+	public function getModel(int $pkey = 0): Model {
 		$model = ArrayUtil::get($this->allModels, $pkey);
 		if (!$model) {
 			if ($pkey === 0) {
@@ -197,13 +209,15 @@ abstract class Logic {
 	 * @return bool true:成功, false:失敗
 	 */
 	protected function saveDepends(Model $model): bool {
-		foreach ($model->getDependModel() as $field => $modelName) {
-			$refModel = $model->getValue($field); // 依存先のモデルを取得
+		foreach ($model->dependModel() as $field => $refModel) {
+			// 依存先のモデルを取得
+			$val = $model->getValue($field);
+			$refModel = Model::castModel($val);
 			if ($refModel === null) continue; // 依存先がない場合はスキップ
 
 			// 依存先のモデルを保存する
-			$logic = Logic::getLogic($modelName . 'Logic');
-			$logic->saveAll();
+			$logic = Logic::getLogic($refModel->modelName() . 'Logic');
+			$logic->save();
 
 			// 依存先の主キーをセット
 			$refPkey = $model->refModelPkey($field);
@@ -267,6 +281,18 @@ abstract class Logic {
 	}
 
 	/**
+	 * クエリを生成する
+	 * @param array $queryDef クエリ定義
+	 * @param ?array $fields フィールド情報 null:全フィールド
+	 * @return Query クエリ
+	 */
+	protected function getQuery(array $queryDef, ?array $fields = null): Query {
+		$fields = $fields ?? $this->fields();
+		$query = new Query($this->tableName(), $fields, $queryDef);
+		return $query;
+	}
+
+	/**
 	 * モデルの値とデータ型を取得する
 	 * @param array $models モデルの配列
 	 * @param ?int $lastPkey 主キーの最大値 (省略 = null)
@@ -306,17 +332,18 @@ abstract class Logic {
 	 * @return void
 	 */
 	protected function setRefModel(Model &$model): void {
-		$fieldDefs = $this->fields();
-		foreach ($fieldDefs as $field => $fieldDef) {
-			$refName = $fieldDef[Model::FLD_MODEL_NAME] ?? null;
+		$fields = $this->fields();
+		foreach ($fields as $obj) {
+			$field = Field::cast($obj);
+			$refName = $field->modelName;
 			if ($refName === null) continue;
 
-			$refPkeyName = $fieldDef[Model::FLD_MODEL_PKEY] ?? null;
+			$refPkeyName = $field->modelId;
 			$refPkey = $model->getValue($refPkeyName) ?? null;
 			if (!$refPkey) continue;
 
 			$refModel = new $refName($refPkey);
-			$model->setValue($field, $refModel); // 関連先のモデルをセット
+			$model->setValue($field->name, $refModel); // 関連先のモデルをセット
 		}
 	}
 	/**
@@ -335,4 +362,3 @@ abstract class Logic {
 		return true;
 	}
 }
-// Logic::$THIS = new Logic(); // シングルトン

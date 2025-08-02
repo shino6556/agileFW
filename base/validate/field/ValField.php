@@ -7,6 +7,7 @@ require_once __DIR__ . '/autoload.php';
 use nnk2\base\util\Results;
 use nnk2\base\util\StrUtil;
 use nnk2\base\data\model\Model;
+use nnk2\base\data\model\Field;
 
 
 /**
@@ -19,6 +20,18 @@ use nnk2\base\data\model\Model;
  */
 abstract class ValField {
     /**
+     * フィールド単位の検証インスタンスにキャストする
+     * @param mixed $obj オブジェクト
+     * @return ?ValField 
+     */
+    public static function castValField(mixed $obj): ?ValField {
+        if ($obj instanceof ValField) {
+            return $obj;
+        }
+        return null;
+    }
+
+    /**
      * バリデーションのインスタンスを取得する
      * @param array &$all ValFieldが登録される配列
      * @param Model $model 対象のモデル
@@ -28,7 +41,7 @@ abstract class ValField {
      * @return ValField バリデーションのインスタンス
      */
     public static function startBase(array &$all, Model $model, ?array $row, string $fieldName, Results $results): ValField {
-        $self = $all[$fieldName] ?? null;
+        $self = ValField::castValField($all[$fieldName]);
         if (!$self) {
             // まだなければ作成する
             $self = new static();
@@ -37,13 +50,19 @@ abstract class ValField {
         $self->model   = $model;
         $self->results = $results;
         $self->name    = $fieldName;
-        $self->fields  = $model->getFields();
+        $self->fields  = $model->fields();
         $self->row     = $row;
 
-        $self->value   = $self->get($fieldName);
-        $self->jpName  = $self->fields[$fieldName][Model::FLD_JAPANESE_NAME];
-        $self->min     = isset($self->fields[$fieldName][Model::FLD_MIN]) ? $self->fields[$fieldName][Model::FLD_MIN] : null;
-        $self->max     = isset($self->fields[$fieldName][Model::FLD_MAX]) ? $self->fields[$fieldName][Model::FLD_MAX] : null;
+        $field = Field::cast($self->fields[$fieldName]);
+        if (!$field) {
+            // フィールドが定義されていない場合はエラー
+            $self->results->error(__METHOD__, 'フィールドが定義されていません。', $fieldName);
+        }
+        $self->value    = $self->get($fieldName);
+        $self->jpName   = $field->jpName;
+        $self->min      = $field->min;
+        $self->max      = $field->max;
+        $self->defValue = $field->defValue;
         return $self;
     }
     protected Model $model;
@@ -54,8 +73,9 @@ abstract class ValField {
     protected mixed $value = null;
     protected string $name;
     protected string $jpName;
-    protected ?int $min;
-    protected ?int $max;
+    protected ?int $min = null; // 最小値
+    protected ?int $max = null; // 最大値
+    protected mixed $defValue = null;
 
     /**
      * コンストラクタ
@@ -102,8 +122,8 @@ abstract class ValField {
      * @return string 日本語名(見つからないと$name)
      */
     protected function jpName(string $name): string {
-        $field = $this->fields[$name] ?? null;
-        $jpName = $field[Model::FLD_JAPANESE_NAME] ?? $name;
+        $field = Field::cast($this->fields[$name]);
+        $jpName = $field === null ? $name : $field->jpName;
         return $jpName;
     }
 
