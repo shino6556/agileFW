@@ -25,20 +25,45 @@ class User extends Model {
 	}
 
 	/**
-	 * モデル名を返す
-	 * @return string モデル名
-	 * @abstract
+	 * @inheritDoc
 	 */
 	public function modelName(): string {
 		return __CLASS__;
 	}
 	/**
-	 * テーブル名を返す
-	 * @return string テーブル名
+	 * @inheritDoc
 	 */
 	public function tableName(): string {
 		return 't_user';
 	}
+
+	/**
+	 * このモデルを管理するロジックを返す
+	 * @return UserLogic ユーザロジック
+	 */
+	protected function getLogic(): UserLogic {
+		return Logic::getLogic($this->modelName());
+	}
+
+	/**
+	 * Userにキャストする
+	 * @param mixed $var キャストする値
+	 * @return ?User null:キャストできなかった場合
+	 */
+	public static function cast(mixed $var): ?User {
+		return ($var instanceof User) ? $var : null;
+	}
+
+	/**
+	 * モデルを活性化させる  
+	 * @param bool $isSetter true:更新された(省略 = true)
+	 * @return User this
+	 */
+	protected function act(bool $isSetter = true): User {
+		return $this->actBase($isSetter);
+	}
+
+	// プロパティの定義 =================================
 
 	/** @var string ユーザ名 */
 	public const string name = 'name';
@@ -67,32 +92,6 @@ class User extends Model {
 			self::$ownFields[self::belong]   = Field::ref(self::belong,    'belong',    '所属',           'UserOrg',     'belongId');
 		}
 		return self::$ownFields;
-	}
-
-	/**
-	 * このモデルを管理するロジックを返す
-	 * @return UserLogic ユーザロジック
-	 */
-	protected function getLogic(): UserLogic {
-		return Logic::getLogic($this->modelName());
-	}
-
-	/**
-	 * Userにキャストする
-	 * @param mixed $var キャストする値
-	 * @return ?User null:キャストできなかった場合
-	 */
-	public static function cast(mixed $var): ?User {
-		return ($var instanceof User) ? $var : null;
-	}
-
-	/**
-	 * モデルを活性化させる  
-	 * @param bool $isSetter true:更新された(省略 = true)
-	 * @return User this
-	 */
-	protected function act(bool $isSetter = true): User {
-		return $this->actBase($isSetter);
 	}
 
 	//// プロパティのセット/取得 ////
